@@ -1,0 +1,17 @@
+int pirPin = 2; // Pin sensor PIR terhubung ke pin 2 Arduino
+
+void setup() {
+ pinMode(pirPin, INPUT); // Set pin sensor PIR sebagai input
+ Serial.begin(9600); // Inisialisasi Serial Monitor
+}
+
+void loop() {
+ int pirState = digitalRead(pirPin); // Baca nilai sensor PIR
+
+ if (pirState == HIGH) { // Jika gerakan terdeteksi
+   Serial.println("Ada yang gerak");
+   delay(500); // Tunda 0.5 detik untuk mengurangi jitter
+ } else {
+    Serial.println("Gada apa-apa");
+ }
+}
