@@ -1,0 +1,41 @@
+#include <LiquidCrystal_I2C.h> // Mengimpor library LiquidCrystal_I2C
+
+int ldrPin = A0; // Mendefinisikan pin LDR pada A0
+int ledPin = 2; // Mendefinisikan pin LED pada D2
+const float GAMMA = 0.7; // Konstanta gamma untuk menghitung tingkat kecerahan
+const float RL10 = 50; // Konstanta RL10 untuk menghitung tingkat kecerahan
+
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Inisialisasi LCD dengan alamat 0x27 dan ukuran 16x2
+
+void setup() {
+  // Kode yang dijalankan sekali saat memulai
+  pinMode(ledPin, OUTPUT); // Mengatur pin LED sebagai output
+  lcd.init(); // Menghidupkan LCD
+  lcd.backlight(); // Menyalakan lampu latar LCD
+}
+
+void loop() {
+  // Kode yang dijalankan berulang kali
+  int ldrValue = analogRead(ldrPin); // Membaca nilai analog dari LDR
+  float voltase = ldrValue / 1024.0 * 5; // Mengubah nilai analog dari LDR menjadi voltase
+  float resistansi = 2000 * voltase / (1 - voltase / 5); // Menghitung resistansi dari voltase
+  float kecerahan = pow(RL10 * 1e3 * pow(10, GAMMA) / resistansi, (1 / GAMMA)); // Menghitung tingkat kecerahan (lux)
+
+  lcd.setCursor(0, 0); // Mengatur posisi karakter LCD pada kolom 0, baris 0
+  lcd.print("Cahaya: "); // Menampilkan teks "Cahaya:" pada LCD
+  if(kecerahan > 50) { // Jika kecerahan lebih dari 50
+    lcd.print("Terang"); // Tampilkan "Terang" di LCD
+    digitalWrite(ledPin, LOW); // Matikan LED jika cahaya terang
+  }
+  else { // Jika kecerahan kurang dari 50
+    lcd.print("Gelap "); // Tampilkan "Gelap" di LCD
+    digitalWrite(ledPin, HIGH); // Nyalakan LED jika cahaya gelap
+  }
+
+  lcd.setCursor(0, 1); // Mengatur posisi karakter LCD pada kolom 0, baris 1
+  lcd.print("Lux: ");
+  lcd.print(kecerahan);
+  lcd.print("     ");
+
+  delay(100); // Menunggu 100 milidetik sebelum pengulangan berikutnya
+}
